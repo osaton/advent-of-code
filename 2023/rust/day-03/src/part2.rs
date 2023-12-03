@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use itertools::Itertools;
+
 use crate::custom_error::AocError;
 
 #[derive(Debug)]
@@ -24,10 +26,6 @@ impl Gear {
         if self.value2.is_none() {
             self.value2 = Some(value);
         }
-    }
-
-    fn has_values(&self) -> bool {
-        self.value1.is_some() && self.value2.is_some()
     }
 
     fn get_gear(&self) -> Option<u32> {
@@ -93,12 +91,17 @@ fn find_gear(
 
     for y in previous_line..=end.0 + 1 {
         let previous_column = if start.1 == 0 { 0 } else { start.1 - 1 };
-        for x in previous_column..=end.1 + 1 {
+
+        let range = if y == start.0 {
+            // We can skip the actual number position
+            vec![start.1 - 1, end.1 + 1]
+        } else {
+            (previous_column..=end.1 + 1).collect_vec()
+        };
+        for x in range {
             if let Some(gear) = gears.get_mut(&format!("{}:{}", y, x)) {
                 gear.set_value(number);
-                if gear.has_values() {
-                    return gear.get_gear();
-                }
+                return gear.get_gear();
             }
         }
     }
