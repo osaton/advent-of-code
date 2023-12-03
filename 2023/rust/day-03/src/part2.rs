@@ -44,7 +44,7 @@ pub fn process(_input: &str) -> miette::Result<String, AocError> {
         (0..line.len() - 1).for_each(|x| {
             let char = line.chars().nth(x).unwrap();
             if char == '*' {
-                gears.insert(format!("{}:{}", y, x), Gear::new());
+                gears.insert((y, x), Gear::new());
             }
         });
     });
@@ -85,7 +85,7 @@ fn find_gear(
     start: (usize, usize),
     end: (usize, usize),
     number: u32,
-    gears: &mut HashMap<String, Gear>,
+    gears: &mut HashMap<(usize, usize), Gear>,
 ) -> Option<u32> {
     let previous_line = if start.0 == 0 { 0 } else { start.0 - 1 };
 
@@ -94,12 +94,12 @@ fn find_gear(
 
         let range = if y == start.0 {
             // We can skip the actual number position
-            vec![start.1 - 1, end.1 + 1]
+            vec![previous_column, end.1 + 1]
         } else {
             (previous_column..=end.1 + 1).collect_vec()
         };
         for x in range {
-            if let Some(gear) = gears.get_mut(&format!("{}:{}", y, x)) {
+            if let Some(gear) = gears.get_mut(&(y, x)) {
                 gear.set_value(number);
                 return gear.get_gear();
             }
