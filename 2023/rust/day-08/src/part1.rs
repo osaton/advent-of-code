@@ -2,7 +2,7 @@ use crate::custom_error::AocError;
 use regex::Regex;
 use std::{collections::HashMap, str::FromStr};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Element {
     id: String,
     left: String,
@@ -68,19 +68,12 @@ pub fn process(_input: &str) -> miette::Result<String, AocError> {
         .collect::<Vec<&str>>();
 
     let mut starting_element: Option<Element> = None;
-    if let Some((last, items)) = it.split_last() {
-        for (i, &item) in items.iter().enumerate() {
-            if i == 0 {
-                starting_element = Some(Element::from_str(item)?);
-                let el = Element::from_str(item)?;
-                elements.insert(el.id.to_owned(), el);
-                continue;
-            }
-            let el = Element::from_str(item)?;
-            elements.insert(el.id.to_owned(), el);
+
+    for &item in it.iter() {
+        let el = Element::from_str(item)?;
+        if el.id == "AAA" {
+            starting_element = Some(el.clone());
         }
-        let mut el = Element::from_str(last)?;
-        el.set_last(true);
         elements.insert(el.id.to_owned(), el);
     }
 
@@ -108,12 +101,7 @@ pub fn process(_input: &str) -> miette::Result<String, AocError> {
 
             current_id = el.get_node(order).to_string();
 
-            if el.id == current_id {
-                println!("Loop detected: {} {}", el.id, current_id);
-            }
-            let el2 = elements.get(&current_id).expect("Failed to get element");
-
-            if el2.last {
+            if current_id == "ZZZ" {
                 seeking = false;
                 return Some(steps);
             }
