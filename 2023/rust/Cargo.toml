@@ -29,6 +29,7 @@ test-log = { version = "0.2.13", default-features = false, features = [
 ] }
 indicatif = { version = "0.17.7", features = ["rayon"] }
 strum = { version = "0.25", features = ["derive", "strum_macros"] }
+regex = "1.10.2"
 
 [profile.flamegraph]
 inherits = "release"
