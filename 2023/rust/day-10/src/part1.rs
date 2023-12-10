@@ -274,7 +274,6 @@ impl FromStr for Map {
         let width = tiles[0].len();
         let height = tiles.len();
 
-        dbg!(width, height);
         Ok(Self {
             tiles,
             width,
