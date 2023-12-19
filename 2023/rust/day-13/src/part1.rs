@@ -1,5 +1,6 @@
 use crate::custom_error::AocError;
 
+use itertools::Itertools;
 use std::{str::FromStr, string::ToString};
 use strum::{Display, EnumString};
 
@@ -17,37 +18,19 @@ struct Pattern {
 
 impl Pattern {
     fn find_mirror_position(&self, rows: &[String]) -> Option<u32> {
-        let mut previous: Vec<String> = vec![];
-        let length = rows.len() as i32;
-        for (i, row) in rows.iter().enumerate() {
-            if !previous.is_empty() && &previous[i - 1] == row {
-                let prev_i = (i - 1) as i32;
-                let mut count = 0;
-                let mut is_mirror_position = true;
-                let i = i as i32;
-                loop {
-                    count += 1;
-                    if prev_i - count < 0 {
-                        break;
-                    }
+        rows.iter()
+            .enumerate()
+            .tuple_windows()
+            .filter(|((_, a), (_, b))| a == b)
+            .find_map(|((i, _), (j, _))| {
+                let lines_prev = (rows[0..=i]).iter().rev();
+                let lines_next = (rows[j..]).iter();
 
-                    if i + count == length {
-                        break;
-                    }
-
-                    if previous[(prev_i - count) as usize] != rows[(i + count) as usize] {
-                        is_mirror_position = false;
-                        break;
-                    }
-                }
-
-                if is_mirror_position {
-                    return Some(i as u32);
-                }
-            }
-            previous.push(row.clone());
-        }
-        None
+                lines_next
+                    .zip(lines_prev)
+                    .all(|(a, b)| a == b)
+                    .then_some(i as u32 + 1)
+            })
     }
     fn find_mirror(&self) -> (Option<u32>, Option<u32>) {
         let (rows, columns) = self.stringified_items();
