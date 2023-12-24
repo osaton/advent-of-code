@@ -932,6 +932,7 @@ dependencies = [
  "nom",
  "nom-supreme",
  "rayon",
+ "regex",
  "rstest",
  "strum",
  "test-log",
