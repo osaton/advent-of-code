@@ -43,10 +43,6 @@ impl Contraption {
             {
                 path.push(next);
 
-                if next.x == 5 && next.y == 8 {
-                    dbg!("found", next, direction);
-                }
-
                 match self.tile(next) {
                     Some(Tile::Empty(_)) => {
                         next += direction;
